@@ -19,7 +19,7 @@ A React Native mobile application that displays inspirational quotes with the ab
 
 ### Technical Requirements ✅
 - ✅ **React Native Framework** - v0.72.7 for Android
-- ✅ **Quote Data Source** - Local quotes array (50+ inspirational quotes)
+- ✅ **Quote Data Source** - Zenquotes API (unlimited inspirational quotes)
 - ✅ **Crash-Free** - Comprehensive error handling, zero crashes
 - ✅ **Clean Code** - Production-quality code with proper architecture
 
@@ -77,13 +77,13 @@ src/
 │   └── IconButton.js
 ├── services/             # Business logic
 │   ├── storageService.js # AsyncStorage wrapper
-│   └── quoteService.js
+│   └── quoteService.js   # Zenquotes API integration
 ├── navigation/           # Navigation setup
 │   └── NavigationStack.js
+├── hooks/                # Custom React hooks
+│   └── useFavoritesCount.js # Favorites count tracking
 ├── styles/               # Design system
 │   └── theme.js
-├── data/                 # Static data
-│   └── quotes.js         # 50+ inspirational quotes
 └── assets/               # Static assets
     └── icons/            # PNG icon files
 ```
@@ -95,6 +95,9 @@ src/
 - **Storage:** @react-native-async-storage/async-storage v1.23.1
 - **Sharing:** react-native-share v10.0.1
 - **Safe Area:** react-native-safe-area-context v4.8.2
+- **HTTP Client:** Axios v1.6.7
+- **Icons:** react-native-vector-icons v10.3.0
+- **Quote API:** Zenquotes (https://zenquotes.io)
 - **Language:** JavaScript
 
 ## 🎨 Design System
@@ -114,12 +117,12 @@ src/
 ## 📱 Screens
 
 ### Home Screen
-- Display random quote with author
+- Display random quote from Zenquotes API with author
 - Heart button to favorite/unfavorite
 - Share button to share quote
 - Refresh button for new quote
-- "Get New Quote" button at bottom
-- Loading and error states
+- Loading and error states with fallback messaging
+- Network error handling with retry option
 
 ### Favorites Screen
 - List of all saved quotes

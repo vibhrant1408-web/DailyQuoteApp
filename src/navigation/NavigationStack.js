@@ -3,51 +3,23 @@
  * Sets up bottom tab navigation between Home and Favorites screens
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useFocusEffect } from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { HomeScreen, FavoritesScreen } from '../screens';
 import { storageService } from '../services/storageService';
+import { useFavoritesCount } from '../hooks/useFavoritesCount';
 import { Colors, FontSizes, Spacing } from '../styles/theme';
 
 const Tab = createBottomTabNavigator();
 
 /**
- * Tab configuration
- */
-const TAB_CONFIG = {
-  Home: {
-    icon: 'house',
-    label: 'Home',
-  },
-  Favorites: {
-    icon: 'heart',
-    label: 'Favorites',
-  },
-};
-
-/**
  * Custom tab bar with icon, label, and badge
  */
 const CustomTabBar = ({ state, descriptors, navigation }) => {
-  const [favoritesCount, setFavoritesCount] = useState(0);
-
-  const loadFavoritesCount = useCallback(async () => {
-    try {
-      const favorites = await storageService.getFavorites();
-      setFavoritesCount(favorites.length);
-    } catch (err) {
-      console.error('Error loading favorites count:', err);
-    }
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadFavoritesCount();
-    }, [loadFavoritesCount])
-  );
+  const favoritesCount = useFavoritesCount(500); // Refresh every 500ms
 
   const handleTabPress = useCallback((route, isFocused, navigation) => {
     const event = navigation.emit({
@@ -61,16 +33,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     }
   }, []);
 
-  const getTabConfig = useCallback((routeName) => {
-    return TAB_CONFIG[routeName] || { icon: '', label: '' };
-  }, []);
-
   return (
     <View style={styles.tabBarContainer}>
       <View style={styles.tabBarInner}>
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
-          const config = getTabConfig(route.name);
 
           return (
             <TouchableOpacity
@@ -81,28 +48,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               accessibilityState={{ selected: isFocused }}
             >
               <View style={styles.tabContent}>
-                <Image 
-                  source={require('../assets/icons/house.png')}
-                  style={[
-                    styles.tabIcon,
-                    {
-                      tintColor: isFocused ? '#F472B6' : Colors.textSecondary,
-                      display: route.name === 'Home' ? 'flex' : 'none',
-                    }
-                  ]}
-                />
-                <Image 
-                  source={require('../assets/icons/heart.png')}
-                  style={[
-                    styles.tabIcon,
-                    {
-                      tintColor: isFocused ? '#F472B6' : Colors.textSecondary,
-                      display: route.name === 'Favorites' ? 'flex' : 'none',
-                    }
-                  ]}
+                <MaterialIcons
+                  name={route.name === 'Home' ? 'home' : 'favorite'}
+                  size={24}
+                  color={isFocused ? Colors.primary : Colors.textSecondary}
                 />
                 <Text style={[styles.tabLabel, isFocused && styles.tabLabelFocused]}>
-                  {config.label}
+                  {route.name === 'Home' ? 'Home' : 'Favorites'}
                 </Text>
                 {route.name === 'Favorites' && favoritesCount > 0 && (
                   <View style={styles.badge}>

@@ -16,10 +16,11 @@ import {
   Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { quoteService } from '../services/quoteService';
 import { storageService } from '../services/storageService';
 import { QuoteCard, LoadingSpinner, ErrorDisplay } from '../components';
 import { Colors, Spacing, FontSizes } from '../styles/theme';
-import { quotes } from '../data/quotes';
 
 export function HomeScreen() {
   const [quote, setQuote] = useState(null);
@@ -35,9 +36,8 @@ export function HomeScreen() {
     setLoading(true);
     setError(null);
     try {
-      // Get random quote from local data
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      const newQuote = quotes[randomIndex];
+      // Fetch random quote from API
+      const newQuote = await quoteService.getRandomQuote();
       setQuote(newQuote);
       
       // Check if this quote is already favorited
